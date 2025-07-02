@@ -2,7 +2,7 @@ import { generateToken } from "../lib/utils";
 import User from "../models/User";
 
 // sign up new user
-export const signup = async (params) => {
+export const signup = async (req, res) => {
 
     const {fullName, email, password, bio} = req.body;
 
@@ -29,6 +29,33 @@ export const signup = async (params) => {
     } catch (error) {
         console.log(error.message);
         res.json({success:false, message:error.message});
+    }
+    
+}
+
+// controller to login a user
+
+export const login = async (req, res) => {
+
+    
+    try {
+        const {email, password} = req.body;
+        const userData = await User.findOne({email});
+        const ispasswordcorrect = await bcrypt.compare(password, userData.password);
+
+        if(!ispasswordcorrect){
+            return res.json({success:false, message: "invalid credentials"});
+        }
+
+        const token = generateToken(userData._id)
+        res.json({success:true, userData, token, message:"login successfull"})
+
+
+        
+    } catch (error) {
+        console.log(error.message);
+        res.json({success:false, message:error.message});
+        
     }
     
 }
