@@ -7,5 +7,5 @@ cloudinary.config({
 
 });
 
-export default clodinary;
+export default cloudinary;
 

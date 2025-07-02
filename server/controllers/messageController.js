@@ -5,8 +5,6 @@ import { io, usersocketmap} from '../server.js';
 
 // get all users except the logged in user
 
-import User from "../models/User";
-
 export const getusersforsidebar = async (req, res) => {
     try {
         const userId = req.user._id;
