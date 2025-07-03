@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import assets from '../assets/assets'
+import { AuthContext } from '../../context/AuthContext';
 
 export const LoginPage = () => {
 
@@ -10,6 +11,8 @@ export const LoginPage = () => {
   const [bio, setbio] = useState("");
   const [isdatasubmitted, setisdatasubmitted] = useState(false);
 
+  const {login} = useContext(AuthContext);
+
 
   const onsubmithandler = (event)=>{
     event.preventDefault();
@@ -18,6 +21,8 @@ export const LoginPage = () => {
       setisdatasubmitted(true)
       return;
     }
+
+    login(currentState=== "Sign Up" ? 'signup' : 'login', {fullname, email, password, bio})
   }
   return (
     <div className='min-h-screen bg-cover bg-center flex items-center 
