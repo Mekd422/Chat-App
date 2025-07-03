@@ -16,7 +16,7 @@ export const AuthProvider = ({children})=>{
 
     //check if the user is authenticated and if so, set the user data and connect the socket
 
-    const chechAuth = async () => {
+    const checkAuth = async () => {
         try {
             const {data} = await axios.get('/api/auth/check');
             if(data.success){
@@ -48,6 +48,33 @@ const login = async(state, credentials)=>{
     }
 }
 
+// logout function to handle user logout and socket disconnection
+
+const logout = async () => {
+    localStorage.removeItem("token");
+    setauthuser(null);
+    settoken(null);
+    setonlineusers([]);
+    axios.defaults.headers.common['token'] = null;
+    toast.success("logged out successfully");
+    socket.disconnect();
+
+}
+
+// update profile function to handle user profile updates
+
+const updateprofile = async (body) => {
+    try {
+        const {data} = await axios.put('/api/auth/update-profile', body);
+        if(data.success){
+            setauthuser(data.user);
+            toast.success('profile updated successfully')
+        }
+    } catch (error) {
+        toast.error(error.message);
+    }
+}
+
 // connect socket function to handle socket connection and online users updates
 
 const connectSocket = (userData)=>{
@@ -71,14 +98,17 @@ const connectSocket = (userData)=>{
         }
 
         checkAuth();
-    },[])
+    },[token])
 
     const value = {
         axios,
         authuser,
         onlineusers,
         socket,
-        token
+        token,
+        login,
+        logout,
+        updateprofile
     }
 
     return (
