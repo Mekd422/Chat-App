@@ -8,7 +8,7 @@ const userrouter = express.Router();
 userrouter.post("/signup", signup);
 userrouter.post("/login", login);
 userrouter.post("/update-profile", protectroute, updateprofile);
-userrouter.post("/check", protectroute, checkAuth);
+userrouter.get("/check", protectroute, checkAuth);
 
 export default userrouter;
 
