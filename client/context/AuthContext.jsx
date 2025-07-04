@@ -1,7 +1,6 @@
 import { createContext, useEffect, useState } from "react"
 import toast from 'react-hot-toast'
 import axios from 'axios'
-import { checkAuth } from "../../server/controllers/userController";
 import {io} from 'socket.io-client'
 
 const backendurl = import.meta.env.VITE_BACKEND_URL;
