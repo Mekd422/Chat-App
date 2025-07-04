@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 
 export const ChatContext = createContext();
 
-export const ChatProvider = ({Children})=>{
+export const ChatProvider = ({children})=>{
     const [messages, setmessages] = useState([]);
     const [users, setusers] = useState([]);
     const [selecteduser, setselecteduser] = useState(null);
@@ -23,7 +23,7 @@ export const ChatProvider = ({Children})=>{
                 setunseenmessages(data.unseenmessages)
             }
         } catch (error) {
-            toast.error(error.messages)
+            toast.error(error.message);
         }
     }
 
@@ -31,12 +31,12 @@ export const ChatProvider = ({Children})=>{
 
     const getMessages = async (userId) => {
         try {
-            const {data} = await axios.get(`api/messages/${userId}`)
+            const {data} = await axios.get(`/api/messages/${userId}`)
             if (data.success){
                 setmessages(data.messages)
             }
         } catch (error) {
-            toast.error(error.messages)
+            toast.error(error.message)
         }
     }
 
@@ -52,7 +52,7 @@ export const ChatProvider = ({Children})=>{
             }
             
         } catch (error) {
-            toast.error(error.messages)
+            toast.error(error.message)
         }
     }
 
@@ -67,8 +67,7 @@ export const ChatProvider = ({Children})=>{
                 axios.put(`/api/messages/mark/${newMessage._id}`);
             }else{
                 setunseenmessages((prevUnseenMessages)=>({
-                    ...prevUnseenMessages, [newMessage.senderId] : prevUnseenMessages[newMessage.senderId] ? prevUnseenMessages
-                    [newMessage.senderId] +  1 : 1
+                    ...prevUnseenMessages, [newMessage.senderId] : prevUnseenMessages[newMessage.senderId] ? prevUnseenMessages[newMessage.senderId] +  1 : 1
 
                 }))
             }
@@ -100,6 +99,6 @@ export const ChatProvider = ({Children})=>{
         setunseenmessages
     }
     return <ChatContext.Provider value={value}>
-        {Children}
+        {children}
     </ChatContext.Provider>
 }
