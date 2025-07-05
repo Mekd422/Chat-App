@@ -53,7 +53,7 @@ export const getmessage = async (req, res) => {
 
 // api to mark message as seen using message id
 
-export const markmessageassen = async (req, res) => {
+export const markmessageasseen = async (req, res) => {
     try {
         const {id} = req.params;
         await Message.findByIdAndUpdate(id, {seen:true});
