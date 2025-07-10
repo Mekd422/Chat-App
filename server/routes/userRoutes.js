@@ -3,11 +3,12 @@ import { checkAuth, login, signup, updateprofile } from '../controllers/userCont
 import { protectroute } from '../middleware/auth.js';
 
 
+
 const userrouter = express.Router();
 
 userrouter.post("/signup", signup);
 userrouter.post("/login", login);
-userrouter.post("/update-profile", protectroute, updateprofile);
+userrouter.put("/update-profile", protectroute, updateprofile);
 userrouter.get("/check", protectroute, checkAuth);
 
 export default userrouter;

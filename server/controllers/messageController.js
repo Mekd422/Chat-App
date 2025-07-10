@@ -69,32 +69,31 @@ export const markmessageasseen = async (req, res) => {
 
 export const sendmessage = async (req, res) => {
     try {
-        const {text, image} = req.body;
-        const recieverid = req.params.id;
-        const senderid = req.user._id;
+        const { text, image } = req.body;
+        const receiverId = req.params.id;
+        const senderId = req.user._id;
 
-        let imageurl;
-        if(image){
-            const uploadresponse = await cloudinary.uploader.upload(image);
-            imageurl = uploadresponse.secure_url;
+        let imageUrl;
+        if (image) {
+            const uploadResponse = await cloudinary.uploader.upload(image);
+            imageUrl = uploadResponse.secure_url;
         }
 
-        const newmessage = await message.create({
-            senderid,
-            recieverid,
-            image: imageurl,
+        const newMessage = await Message.create({
+            senderId,
+            receiverId,
+            image: imageUrl,
             text
-        })
+        });
 
-        // emit the new message to the reciever's socket
+        const receiverSocketId = usersocketmap[receiverId];
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("newMessage", newMessage);
+        }
 
-        const receiversocketid = usersocketmap[recieverid];
-        if (receiversocketid){
-            io.to(receiversocketid).emit("new message", newmessage);
-        } 
-        res.json({success:true, newmessage});
+        res.json({ success: true, newMessage });
     } catch (error) {
         console.log(error.message);
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: error.message });
     }
 }
