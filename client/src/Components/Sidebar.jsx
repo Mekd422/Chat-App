@@ -57,14 +57,14 @@ includes(input.toLowerCase())) : users;
                         {/* question */}
                         <p>{user.fullName}</p>
                         {
-                            onlineUsers.includes(user._id)
+                            onlineUsers && onlineUsers.includes(user._id)
                             ? <span className='text-green-400 text-xs'>Online</span>
                             : <span className='text-neutral-400 text-xs'>Offline</span>
                         }
 
                     </div>
                     {unseenmessages[user._id] > 0 && <p className='absolute top-4 right-4 text-xs h-5 w-5 flex
-                    justify-center items-center rounded-full bg-violet-500/50 '>{unseenmessages[users._id]}</p> }
+                    justify-center items-center rounded-full bg-violet-500/50 '>{unseenmessages[user._id]}</p> }
                 </div>
             ))}
 

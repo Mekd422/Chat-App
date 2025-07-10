@@ -56,7 +56,7 @@ const logout = async () => {
     setonlineusers([]);
     axios.defaults.headers.common['token'] = null;
     toast.success("logged out successfully");
-    socket.disconnect();
+    if (socket) socket.disconnect();
 
 }
 
@@ -94,9 +94,10 @@ const connectSocket = (userData)=>{
     useEffect(()=>{
         if(token){
             axios.defaults.headers.common["token"] = token;
+            checkAuth();
         }
 
-        checkAuth();
+        
     },[token])
 
     const value = {

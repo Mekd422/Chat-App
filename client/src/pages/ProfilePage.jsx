@@ -2,33 +2,36 @@ import React, { useContext, useState } from 'react'
 import {useNavigate} from 'react-router-dom'
 import assets from '../assets/assets';
 import { AuthContext } from '../../context/AuthContext';
+import toast from "react-hot-toast";
 
 export const ProfilePage = () => {
 
   const {authuser, updateprofile} = useContext(AuthContext);
   const [selectedimg, setselectedimg] = useState(null);
   const navigate = useNavigate();
-  const [name, setname] = useState(authuser.fullname);
-  const [bio, setbio] = useState(authuser.bio);
+  const [name, setName] = useState(authuser?.fullName || '');
+  const [bio, setBio] = useState(authuser?.bio || '');
 
-  const handleSubmit = async (e)=>{
-    e.preventDefault();
-    
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
     if(!selectedimg){
-      await updateprofile({fullname: name, bio});
+      await updateprofile({fullName: name, bio});
       navigate("/");
       return;
     }
 
     const reader = new FileReader();
-    reader.readAsDataURL(selectedimg);
     reader.onload = async () => {
       const base64image = reader.result;
-      await updateprofile({profilepic: base64image, fullname: name, bio});
+      await updateprofile({profilePic: base64image, fullName: name, bio});
       navigate('/');
-    }
-
+    };
+    reader.readAsDataURL(selectedimg);
+  } catch (error) {
+    toast.error(error.message);
   }
+}
 
 
   return (
@@ -45,11 +48,11 @@ export const ProfilePage = () => {
             }`} /> Upload profile image
           </label>
 
-          <input onChange={(e)=>setname(e.target.value)} value={name} type="text" required placeholder='Your name' className='
+          <input onChange={(e)=>setName(e.target.value)} value={name} type="text" required placeholder='Your name' className='
           p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2
           focus:ring-violet-500' />
 
-          <textarea onChange={(e)=>setbio(e.target.value)} value={bio} placeholder='write profile bio' required className='p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2
+          <textarea onChange={(e)=>setBio(e.target.value)} value={bio} placeholder='write profile bio' required className='p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2
           focus:ring-violet-500' rows={4}></textarea>
           <button className='bg-gradient-to-r from-purple-400
           to-violet-600 text-white p-2 rounded-full text-lg cursor-pointer' type='submit'>Save</button>

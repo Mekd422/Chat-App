@@ -8,7 +8,7 @@ export const ChatContext = createContext();
 export const ChatProvider = ({children})=>{
     const [messages, setmessages] = useState([]);
     const [users, setusers] = useState([]);
-    const [selecteduser, setselecteduser] = useState(null);
+    const [selectedUser, setselectedUser] = useState(null);
     const [unseenmessages, setunseenmessages] = useState({});
 
     const {socket, axios} = useContext(AuthContext);
@@ -44,7 +44,7 @@ export const ChatProvider = ({children})=>{
 
     const sendMessage = async (messageData) => {
         try {
-            const {data} = await axios.post(`/api/messages/send/${selecteduser._id}`, messageData);
+            const {data} = await axios.post(`/api/messages/send/${selectedUser._id}`, messageData);
             if (data.success){
                 setmessages((prevMessages)=>[...prevMessages, data.newMessage])
             }else{
@@ -57,22 +57,32 @@ export const ChatProvider = ({children})=>{
     }
 
     // function to subscribe to messages for selected user
-    const subscribeToMessages = async () => {
-        if(!socket) return;
+    const subscribeToMessages = () => {
+  if(!socket) return;
 
-        socket.on("newMessage", (newMessage)=>{
-            if(selecteduser && newMessage.senderId === selecteduser._id){
-                newMessage.seen = true;
-                setmessages((prevMessages)=>[...prevMessages, newMessage]);
-                axios.put(`/api/messages/mark/${newMessage._id}`);
-            }else{
-                setunseenmessages((prevUnseenMessages)=>({
-                    ...prevUnseenMessages, [newMessage.senderId] : prevUnseenMessages[newMessage.senderId] ? prevUnseenMessages[newMessage.senderId] +  1 : 1
-
-                }))
-            }
-        })
+  const messageHandler = (newMessage) => {
+    if(selectedUser && newMessage.senderId === selectedUser._id){
+      setmessages((prevMessages)=>[...prevMessages, newMessage]);
+      axios.put(`/api/messages/mark/${newMessage._id}`);
+    } else {
+      setunseenmessages((prevUnseenMessages)=>({
+        ...prevUnseenMessages, 
+        [newMessage.senderId]: (prevUnseenMessages[newMessage.senderId] || 0) + 1
+      }));
     }
+  };
+
+  socket.on("newMessage", messageHandler);
+
+  return () => {
+    socket.off("newMessage", messageHandler);
+  };
+}
+
+useEffect(()=>{
+  const cleanup = subscribeToMessages();
+  return cleanup;
+}, [socket, selectedUser]);
 
     // function to unsubscribe from messages
 
@@ -84,18 +94,18 @@ export const ChatProvider = ({children})=>{
         subscribeToMessages();
         return ()=> unsubscribeFromMessages();
 
-    }, [socket, selecteduser])
+    }, [socket, selectedUser])
 
     const value = {
 
         messages, 
         users,
-        selecteduser,
+        selectedUser,
         unseenmessages,
         getUsers,
         getMessages,
         sendMessage,
-        setselecteduser,
+        setselectedUser,
         setunseenmessages
     }
     return <ChatContext.Provider value={value}>

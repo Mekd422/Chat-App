@@ -22,7 +22,12 @@ export const LoginPage = () => {
       return;
     }
 
-    login(currentState=== "Sign Up" ? 'signup' : 'login', {fullname, email, password, bio})
+    login(currentState === "Sign Up" ? 'signup' : 'login', {
+  fullName: fullname,
+  email,
+  password,
+  bio
+});
   }
   return (
     <div className='min-h-screen bg-cover bg-center flex items-center 
