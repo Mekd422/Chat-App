@@ -88,3 +88,30 @@ export const updateprofile = async (req, res) => {
         res.json({success: false, message: error.message});
     }
 }
+
+const tokenBlacklist = new Set();
+
+export const logout = async (req, res) => {
+    try {
+        const token = req.headers['token'];
+        
+        // Option 1: Simple token blacklisting
+        tokenBlacklist.add(token);
+        
+        // Option 2: If using activeSessions in User model
+        // await User.findByIdAndUpdate(req.user._id, {
+        //     $pull: { activeSessions: token }
+        // });
+        
+        res.json({ 
+            success: true, 
+            message: "Logged out successfully" 
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.json({ 
+            success: false, 
+            message: error.message 
+        });
+    }
+}
