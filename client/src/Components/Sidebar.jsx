@@ -8,7 +8,7 @@ export const Sidebar = () => {
 
     const {getUsers, users, selectedUser, setselectedUser, unseenmessages, setunseenmessages} = useContext(ChatContext);
 
-    const {onlineUsers} = useContext(AuthContext);
+    const {onlineusers} = useContext(AuthContext);
 
     const [input, setInput] = useState(false);
 
@@ -20,7 +20,7 @@ includes(input.toLowerCase())) : users;
     useEffect(()=>{
         getUsers();
 
-    }, [onlineUsers])
+    }, [onlineusers])
   return (
     <div className={`bg-[#818582]/10 h-full p-5 rounded-r-xl overflow-y-scroll
     text-white ${selectedUser ? "max-md:hidden": ""}`}>
@@ -57,7 +57,7 @@ includes(input.toLowerCase())) : users;
                         {/* question */}
                         <p>{user.fullName}</p>
                         {
-                            onlineUsers && onlineUsers.includes(user._id)
+                            onlineusers && onlineusers.includes(user._id)
                             ? <span className='text-green-400 text-xs'>Online</span>
                             : <span className='text-neutral-400 text-xs'>Offline</span>
                         }
