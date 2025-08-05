@@ -5,6 +5,7 @@ import { ChatContext } from '../../context/ChatContext'
 import { AuthContext } from '../../context/AuthContext'
 
 export const Sidebar = () => {
+    const {logout} = useContext(AuthContext)
 
     const {getUsers, users, selectedUser, setselectedUser, unseenmessages, setunseenmessages} = useContext(ChatContext);
 
@@ -34,7 +35,7 @@ includes(input.toLowerCase())) : users;
                     bg-[#282142] border border-gray-600 text-gray-100 hidden group-hover:block'>
                         <p onClick={()=>navigate('/profile')} className='cursor-pointer text-sm'>Edit Profile</p>
                         <hr className='my-2 border-t border-gray-500' />
-                        <p className='cursor-pointer text-sm'>Logout</p>
+                        <p onClick={()=> logout()} className='cursor-pointer text-sm'>Logout</p>
                     </div>
 
                 </div>
