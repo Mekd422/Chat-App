@@ -24,7 +24,7 @@ export const ProfilePage = () => {
     const reader = new FileReader();
     reader.onload = async () => {
       const base64image = reader.result;
-      await updateprofile({profilePic: base64image, fullName: name, bio});
+      await updateprofile({profilepic: base64image, fullName: name, bio});
       navigate('/');
     };
     reader.readAsDataURL(selectedimg);
@@ -57,10 +57,12 @@ export const ProfilePage = () => {
           <button className='bg-gradient-to-r from-purple-400
           to-violet-600 text-white p-2 rounded-full text-lg cursor-pointer' type='submit'>Save</button>
         </form>
-        <img  className={`max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10
-         ${selectedimg &&
-              'rounded-full'
-            }` }src={ authuser?.profilepic || assets.logo_icon} alt="" />
+        <img
+  className="max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10"
+  src={selectedimg ? URL.createObjectURL(selectedimg) : (authuser?.profilepic || assets.logo_icon)}
+  alt="Profile"
+/>
+
       </div>
 
     </div>
