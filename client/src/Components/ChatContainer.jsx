@@ -10,7 +10,7 @@ export const ChatContainer = () => {
   const {messages, selectedUser, setselectedUser, 
     sendMessage, getMessages} = useContext(ChatContext);
 
-  const {authUser, onlineUsers} = useContext(AuthContext);
+  const {authuser, onlineUsers} = useContext(AuthContext);
 
   const scrollEnd = useRef()
 
@@ -22,16 +22,14 @@ export const ChatContainer = () => {
     if(input.trim() === "") return null;
     await sendMessage({text: input.trim()});
     setInput("");
-
-    
   }
 
   // handle sending an image
-
   const handleSendImage = async (e) => {
     const file = e.target.files[0];
     if(!file || !file.type.startsWith('image/')){
       toast.error("select an image file");
+      return;
     }
     const reader = new FileReader();
 
@@ -42,10 +40,10 @@ export const ChatContainer = () => {
 
     reader.readAsDataURL(file);
   }
+
   useEffect(()=>{
     if(selectedUser){
       getMessages(selectedUser._id)
-
     }
   }, [selectedUser])
 
@@ -53,8 +51,12 @@ export const ChatContainer = () => {
     if(scrollEnd.current && messages){
       scrollEnd.current.scrollIntoView({ behavior: "smooth"})
     }
-
   }, [messages])
+
+  console.log("messages:", messages);
+console.log("authuser:", authuser);
+console.log("selectedUser:", selectedUser);
+
   return selectedUser
   ? (
     <div className='h-full overflow-scroll relative backdrop-blur-lg'>
@@ -70,26 +72,27 @@ export const ChatContainer = () => {
       </div>
       {/*chat area */}
       <div className='flex flex-col h-[calc(100%-120px)] overflow-y-scroll p-3 pb-6'>
-        { authUser && messages.map((msg , index) =>(<div key={index} className={`flex items-end gap-2 justify-end ${msg.senderId !== authUser._id && 'flex-row-reverse'}`}>
-          {msg.image ? (
-            <img src={msg.image} className='max-w-[230px] border border-gray-700 rounded-lg overflow-hidden mb-8'/>
-          ): (
-            <p className={`p-2 max-w-[200px] md:text-sm font-light rounded-lg mb-8 break all bg-violent-500/30 text-white ${msg.senderId === authUser._id  ? 'rounded-br-none' : 'rounded-bl-none'}`}>{msg.text}</p>
-          )}
+        { authuser && messages.map((msg , index) => {
+          // FIX: Always compare IDs as strings
+          const isSentByMe = String(msg.senderId) === String(authuser._id);
+          return (
+            <div key={index} className={`flex items-end gap-2 justify-end ${!isSentByMe && 'flex-row-reverse'}`}>
+              {msg.image ? (
+                <img src={msg.image} className='max-w-[230px] border border-gray-700 rounded-lg overflow-hidden mb-8'/>
+              ): (
+                <p className={`p-2 max-w-[200px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white ${isSentByMe  ? 'rounded-br-none' : 'rounded-bl-none'}`}>{msg.text}</p>
+              )}
 
-          <div className='text-center text-xs'>
-            <img className='w-7 rounded-full' 
-             src={msg.senderId === authUser._id ? authUser?.profilePic || assets.avatar_icon : selectedUser?.profilePic || assets.avatar_icon } alt="" />
-             <p className='text-gray-500' >{formatMessageTime(msg.createdAt) }</p>
+              <div className='text-center text-xs'>
+                <img className='w-7 rounded-full' 
+                 src={isSentByMe ? authuser?.profilePic || assets.avatar_icon : selectedUser?.profilePic || assets.avatar_icon } alt="" />
+                 <p className='text-gray-500' >{formatMessageTime(msg.createdAt) }</p>
+              </div>
+            </div>
+          )
+        })}
 
-          </div>
-
-        </div>))}
-
-        <div ref={scrollEnd}>
-
-          
-        </div>
+        <div ref={scrollEnd}></div>
         {/*bottom */}
 
         <div className='absolute bottom-0 left-0 right-0 flex items-center gap-3 p-3'>
@@ -107,14 +110,12 @@ export const ChatContainer = () => {
           <img onClick={handleSendMessage} src={assets.send_button} className='w-7 cursor-pointer' alt="" />
 
         </div>
-
-
-
       </div>
-      
     </div>
-  ) : (<div className='flex flex-col items-center justify-center gap-2 text-gray-500 bg-white/10 max-md:hidden'>
-    <img src={assets.logo_icon} className='max-w-16' alt="" />
-    <p className='text-lg font-medium text-white'>Chat anytime, anywhere</p>
-  </div>)
+  ) : (
+    <div className='flex flex-col items-center justify-center gap-2 text-gray-500 bg-white/10 max-md:hidden'>
+      <img src={assets.logo_icon} className='max-w-16' alt="" />
+      <p className='text-lg font-medium text-white'>Chat anytime, anywhere</p>
+    </div>
+  )
 }

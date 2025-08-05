@@ -50,14 +50,34 @@ const login = async(state, credentials)=>{
 // logout function to handle user logout and socket disconnection
 
 const logout = async () => {
-    localStorage.removeItem("token");
-    setauthuser(null);
-    settoken(null);
-    setonlineusers([]);
-    axios.defaults.headers.common['token'] = null;
-    toast.success("logged out successfully");
-    if (socket) socket.disconnect();
-
+    try {
+        // 1. Notify backend
+        await axios.post('/api/auth/logout');
+        
+        // 2. Clear client state
+        localStorage.removeItem("token");
+        setauthuser(null);
+        settoken(null);
+        setonlineusers([]);
+        delete axios.defaults.headers.common['token'];
+        
+        // 3. Cleanup sockets
+        if (socket) {
+            socket.disconnect();
+            setsocket(null);
+        }
+        
+        // 4. Optional: Redirect to login
+        // navigate('/login');
+        
+        toast.success("Logged out successfully");
+    } catch (error) {
+        console.error("Logout error:", error);
+        // Even if backend logout failed, ensure client cleans up
+        localStorage.removeItem("token");
+        if (socket) socket.disconnect();
+        toast.error("Logged out (local cleanup complete)");
+    }
 }
 
 // update profile function to handle user profile updates
